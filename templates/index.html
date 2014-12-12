@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Coaster Tycoon</title>
+
+<style>
+	
+	* {
+		margin: 0px;
+		padding: 0px;
+	}
+
+	html, body {
+		height: 100%;
+	}
+	
+	#game {
+		display: block;
+	}
+
+</style>
+
+</head>
+<body>
+
+	<canvas id="game"></canvas>
+
+
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+	<script src="/static/js/Game.js"></script>
+	<script src="/static/js/Player.js"></script>
+	<script src="/static/js/Map.js"></script>
+	<script src="/static/js/Tile.js"></script>
+	<script src="/static/js/Viewport.js"></script>
+	<script type="text/javascript">
+		var game = new Game();
+	</script>
+
+</body>
+</html>
+
