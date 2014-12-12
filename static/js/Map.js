@@ -1,45 +1,74 @@
 var Map = function() {
+	this.size = 512;
 	this.mapGround;
 	this.mapObjects;
 	this.generateGround();
 	this.load();
 };
 
-Map.size = 1024;
-
-Map.prototype.generateGround = function() {
+Map.prototype.generateGround = function(genSize, returnMap) {
+	genSize = typeof genSize !== 'undefined' ?  genSize : -1;
+	returnMap = typeof returnMap !== 'undefined' ?  returnMap : false;
 	console.log("Generating ground..");
-	this.mapGround = new Array(Map.size);
-	for(y = 0; y < Map.size; y++) {
-		this.mapGround[y] = new Array(Map.size);
-		for(x = 0; x < Map.size; x++) {
-			this.mapGround[y][x] = 1;
+	var gensize = genSize > 0 ? genSize : this.size;
+	var newMap = new Array(gensize);
+	for(y = 0; y < gensize; y++) {
+		newMap[y] = new Array(gensize);
+		for(x = 0; x < gensize; x++) {
+			newMap[y][x] = 1;
 		}
 	}
 	console.log("Ground generation complete.");
+	if(returnMap)
+		return newMap;
+	else
+		this.mapGround = newMap;
 };
 	
-Map.prototype.generateMap = function() {
+Map.prototype.generateMap = function(genSize, returnMap) {
+	genSize = typeof genSize !== 'undefined' ?  genSize : -1;
+	returnMap = typeof returnMap !== 'undefined' ?  returnMap : false;
 	console.log("Generating new map..");
-	this.mapObjects = new Array(Map.size);
-	for(y = 0; y < Map.size; y++) {
-		this.mapObjects[y] = new Array(Map.size);
-		for(x = 0; x < Map.size; x++) {
-			this.mapObjects[y][x] = 0;
+	var gensize = genSize > 0 ? genSize : this.size;
+	var newMap = new Array(gensize);
+	for(y = 0; y < gensize; y++) {
+		newMap[y] = new Array(gensize);
+		for(x = 0; x < gensize; x++) {
+			newMap[y][x] = 0;
 		}
 	}
 	console.log("Map generation complete.");
+	if(returnMap)
+		return newMap;
+	else
+		this.mapObjects = newMap;
 };
 
 Map.prototype.render = function(viewport) {
 	
 	// Compute what tiles are within viewport
-	var startX = parseInt((viewport.offsetX / Tile.tileSize), 10);
-	var endX = startX + parseInt((viewport.width / Tile.tileSize), 10) + 2;
-	var startY = parseInt((viewport.offsetY / Tile.tileSize), 10);
-	var endY = startY + parseInt((viewport.height / Tile.tileSize), 10) + 2;
-	var startPosX = (viewport.offsetX % Tile.tileSize) * -1;
-	var startPosY = (viewport.offsetY % Tile.tileSize) * -1;
+	var scaledTile = Tile.tileSize * viewport.scale;
+	var centerX = viewport.width / 2;
+	var centerY = viewport.height / 2;
+	var startX = Math.max(Math.floor((viewport.offset.x - (viewport.width / 2)) / scaledTile), 0);
+	//var startX = Math.floor((centerX - viewport.offset.x) / scaledTile)
+	var endX = Math.ceil((viewport.offset.x + (viewport.width / 2)) / scaledTile);
+	var startY = Math.max(Math.floor((viewport.offset.y - (viewport.height / 2)) / scaledTile), 0);
+	var endY = Math.ceil((viewport.offset.y + (viewport.height / 2)) / scaledTile);
+	
+	//var startPosX = ((viewport.offset.x - (viewport.width / 2)) % scaledTile) * -1;
+	//var startPosY = ((viewport.offset.y - (viewport.height / 2)) % scaledTile) * -1;
+	var startPosX = centerX - viewport.offset.x;
+	var startPosY = centerY - viewport.offset.y;
+	
+	/*console.log(	"offsetX: " + viewport.offset.x +
+					"; offsetY: " + viewport.offset.y +
+					"; startX: " + startX +
+					"; endX: " + endX +
+					"; startY: " + startY +
+					"; endY: " + endY +
+					"; startPosX: " + startPosX +
+					"; startPosY: " + startPosY + ";");*/
 	
 	// Render ground first
 	this.renderLayer(viewport, this.mapGround, startX, endX, startY, endY, startPosX, startPosY);
@@ -48,21 +77,21 @@ Map.prototype.render = function(viewport) {
 	this.renderLayer(viewport, this.mapObjects, startX, endX, startY, endY, startPosX, startPosY);
 };
 
-Map.prototype.renderLayer = function(viewport, layer, startX, endX, startY, endY, startPosX, startPosY) {
-	var posX = startPosX;
-	var posY = startPosY;
+Map.prototype.renderLayer = function(viewport, layer, startX, endX, startY, endY) {
+	var scaledTile = Tile.tileSize * viewport.scale;
+	var center = new Point(viewport.height / 2, viewport.width / 2);
+	var gridPos = new Point(0, 0);
+	var layerCell;
 	for(y = startY; y < endY; y++) {
-		if(y < 0 || y >= Map.size)
-			break;
+		if(y < 0) continue;
+		if(y >= this.size) break;
 		for(x = startX; x < endX; x++) {
-			if(x < 0 || x >= Map.size)
-				break;
-			var layerCell = layer[y][x];
-			Tile.tiles[layerCell].render(viewport, posY, posX);
-			posX += 32;
+			if(x < 0) continue;
+			if(x >= this.size) break;
+			layerCell = layer[y][x];
+			gridPos.set(scaledTile * y, scaledTile * x);
+			Tile.tiles[layerCell].render(viewport, center.y - viewport.offset.y + gridPos.y, center.x - viewport.offset.x + gridPos.x);
 		}
-		posX = startPosX;
-		posY += 32;
 	}
 };
 
@@ -76,11 +105,11 @@ Map.prototype.load = function() {
 		data: {username: $game.player.username}
 	})
 	.done(function( response ) {
-		console.log(response);
+		//console.log(response);
 		response = JSON.parse(response);
 		if(response.map_exists) {
 			data = JSON.parse(response.data);
-			console.log(data);
+			//console.log(data);
 			map = JSON.parse(data.map);
 			$this.mapObjects = map;
 			console.log("Done loading map.");
@@ -90,7 +119,7 @@ Map.prototype.load = function() {
 			$this.generateMap();
 		}
 	});
-}
+};
 
 Map.prototype.save = function() {
 	var $this = this
@@ -108,4 +137,19 @@ Map.prototype.save = function() {
 		else
 			console.log("Error saving map.");
 	});
+};
+
+Map.prototype.resize = function(newSize) {
+	var newGround = this.generateGround(newSize, true);
+	var newObjects = this.generateMap(newSize, true);
+	var smallerSize = Math.min(newSize, this.size);
+	for(y = 0; y < smallerSize; y++) {
+		for(x = 0; x < smallerSize; x++) {
+			newGround[y][x] = this.mapGround[y][x];
+			newObjects[y][x] = this.mapObjects[y][x];
+		}
+	}
+	this.size = newSize;
+	this.mapGround = newGround;
+	this.mapObjects = newObjects;
 };

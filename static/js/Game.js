@@ -10,66 +10,46 @@ var Game = function() {
 	
 	this.viewport;
 	
+	this.IO;
+	
 	this.map;
-
+	
+	this.update = function() {
+		$game.IO.process($game.viewport);
+	}
+	
 	this.render = function() {
 		$game.viewport.wipe();
 		$game.map.render($game.viewport);
+		$game.framecounter.render($game.viewport);
+		$game.viewport.renderGUI();
 	}
-
 	
-
-	this.windowMovementSpeed = 20;
-	this.keyStates = [];
-	document.onkeydown = document.onkeyup = function(e) {
-	    e = e || window.event;
-	    $game.keyStates[e.keyCode] = e.type == 'keydown';
-	    e.preventDefault();
-	}
-	this.keys = function() {
-	    if (this.keyStates[38]) { // up arrow
-	        $game.viewport.offsetY -= $game.viewport.movementSpeed;
-	    }
-	    else if (this.keyStates[40]) { // down arrow
-	        $game.viewport.offsetY += $game.viewport.movementSpeed;
-	    }
-	    if (this.keyStates[37]) { // left arrow
-	        $game.viewport.offsetX -= $game.viewport.movementSpeed;
-	    }
-	    else if (this.keyStates[39]) { // right arrow
-	        $game.viewport.offsetX += $game.viewport.movementSpeed;
-	    }
-	    
-	    if($game.viewport.offsetX < 0) $game.viewport.offsetX = 0;
-	    if($game.viewport.offsetY < 0) $game.viewport.offsetY = 0;
-	};
-
+	this.framecounter;
 	this.loopInterval;
 	this.loop = function() {
 		$game.running = true;
 		$game.framesTime = new Date().getTime();
 		console.log("Starting game loop.");
-		$game.loopInterval = window.setInterval(function() { $game.loopLogic(); }, 30);
+		$game.loopInterval = window.setInterval(function() { $game.loopLogic(); }, 0);
+	}
+	this.r = {
+		ups: 60,
+		skipTicks: 1000 / 60,
+		nextTick: (new Date).getTime(),
+		maxFrameSkip: 10,
+		updates: 0,
 	}
 	this.loopLogic = function() {
-		$game.keys();
-		$game.render();
-		$game.framecounter();
-	}
-	this.frames = 0;
-	this.framesTime = 0;
-	this.fps = 0;
-	this.framecounter = function() {
-		$game.frames++;
-		if($game.frames >= 30) {
-			now = new Date().getTime();
-			ellapsed = (now - $game.framesTime) / 1000;
-			$game.fps = parseInt(($game.frames / ellapsed), 10);
-			$game.frames = 0;
-			$game.framesTime = now;
+		$game.r.updates = 0;
+		while((new Date).getTime() > $game.r.nextTick && $game.r.updates < $game.r.maxFrameSkip) {
+			$game.update();
+			$game.r.nextTick += $game.r.skipTicks;
+			$game.r.updates++;
+			$game.framecounter.tick();
 		}
-		$game.viewport.ctx.font="14px Arial";
-		$game.viewport.ctx.fillText($game.fps + " fps",10, $game.viewport.height - 20);
+		$game.render();
+		$game.framecounter.frame();
 	}
 	this.stop = function() {
 		$game.running = false;
@@ -78,13 +58,16 @@ var Game = function() {
 	}
 	
 	this.start = function() {
+		$game.loop();
+	}
+	
+	this.init = function() {
 		$game.player = new Player();
 		$game.player.login();
 		$game.viewport = new Viewport();
 		$game.map = new Map();
-		$game.loop();
+		$game.framecounter = new FrameCounter();
+		$game.IO = new IO();
 	}
-	
-	
 
 };

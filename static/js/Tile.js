@@ -1,7 +1,6 @@
 var Tile = function(name, y, x, size) {
 	this.name = name;
-	this.y = y;
-	this.x = x;
+	this.setPos = new Point(y, x);
 	this.size =  typeof size !== 'undefined' ? size : 32;
 };
 
@@ -25,13 +24,21 @@ Tile.tiles = {
 };
 
 Tile.prototype.tileY = function() {
-	return this.y * this.size;
+	return this.setPos.y * this.size;
 };
 
 Tile.prototype.tileX = function() {
-	return this.x * this.size;
+	return this.setPos.x * this.size;
 };
 
 Tile.prototype.render = function(viewport, cY, cX) {
-	viewport.ctx.drawImage(Tile.tileSet, this.tileX(), this.tileY(), this.size, this.size, cX, cY, this.size, this.size);
+	viewport.ctx.drawImage(	Tile.tileSet, 
+							this.tileX(),
+							this.tileY(),
+							this.size,
+							this.size,
+							cX,
+							cY,
+							this.size * viewport.scale,
+							this.size * viewport.scale);
 };
