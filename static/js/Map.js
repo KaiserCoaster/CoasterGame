@@ -2,10 +2,9 @@ var Map = function() {
 	this.size = 512;
 	this.mapGround;
 	this.mapObjects;
+	this.trains = [];
 	this.generateGround();
 	this.load();
-	this.trains = {};
-	this.trains[0] = new Train(1,0);
 };
 
 Map.prototype.generateGround = function(genSize, returnMap) {
@@ -60,16 +59,9 @@ Map.prototype.render = function(viewport) {
 	var centerX = viewport.width / 2;
 	var centerY = viewport.height / 2;
 	var startX = Math.max(Math.floor((viewport.offset.x - (viewport.width / 2)) / scaledTile), 0);
-	//var startX = Math.floor((centerX - viewport.offset.x) / scaledTile)
 	var endX = Math.ceil((viewport.offset.x + (viewport.width / 2)) / scaledTile);
 	var startY = Math.max(Math.floor((viewport.offset.y - (viewport.height / 2)) / scaledTile), 0);
 	var endY = Math.ceil((viewport.offset.y + (viewport.height / 2)) / scaledTile);
-	
-	//var startPosX = ((viewport.offset.x - (viewport.width / 2)) % scaledTile) * -1;
-	//var startPosY = ((viewport.offset.y - (viewport.height / 2)) % scaledTile) * -1;
-	var startPosX = centerX - viewport.offset.x;
-	var startPosY = centerY - viewport.offset.y;
-	
 	/*console.log(	"offsetX: " + viewport.offset.x +
 					"; offsetY: " + viewport.offset.y +
 					"; startX: " + startX +
@@ -80,10 +72,10 @@ Map.prototype.render = function(viewport) {
 					"; startPosY: " + startPosY + ";");*/
 	
 	// Render ground first
-	this.renderLayer(viewport, this.mapGround, startX, endX, startY, endY, startPosX, startPosY);
+	this.renderLayer(viewport, this.mapGround, startX, endX, startY, endY);
 	
 	// Render objects on top of ground
-	this.renderLayer(viewport, this.mapObjects, startX, endX, startY, endY, startPosX, startPosY);
+	this.renderLayer(viewport, this.mapObjects, startX, endX, startY, endY);
 	
 	// Render trains
 	for(var t in this.trains) {
@@ -129,6 +121,13 @@ Map.prototype.load = function() {
 			//console.log(data);
 			map = JSON.parse(data.map);
 			$this.mapObjects = map;
+			for(y = 0; y < map.length; y++) {
+				for(x = 0; x < map.length; x++) {
+					if(map[y][x] == Tile.NAMES.STATION_HORIZONTAL) {
+						$this.trains.push(new Train(x, y));
+					}
+				}
+			}
 			console.log("Done loading map.");
 		}
 		else {

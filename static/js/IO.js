@@ -8,6 +8,10 @@ IO.KEYS = {
 	DOWN: 40,
 	LEFT: 37,
 	RIGHT: 39,
+	W: 87,
+	A: 65,
+	S: 83,
+	D: 68,
 }
 
 IO.keyStates = [];
@@ -28,11 +32,11 @@ IO.prototype.mousewheel = function(e) {
 	var scalePercentage = $game.viewport.scale / oldScale;
 	$game.viewport.offset.x = Math.floor($game.viewport.offset.x * scalePercentage);
 	$game.viewport.offset.y = Math.floor($game.viewport.offset.y * scalePercentage);
-	console.log(	"delta: " + delta + 
+	/*console.log(	"delta: " + delta + 
 					"; oldScale: " + oldScale +
 					"; proposedScale: " + proposedScale + 
 					"; newScale: " + $game.viewport.scale +
-					"; scalePercentage: " +scalePercentage);
+					"; scalePercentage: " +scalePercentage);*/
 	e.preventDefault();
 };
 
@@ -43,12 +47,12 @@ IO.prototype.key = function(e) {
 };
 
 IO.prototype.process = function(viewport) {
-    if (IO.keyStates[IO.KEYS.UP])
-	    viewport.offset.y = Math.max(0, viewport.offset.y - viewport.movementSpeed);
-    else if (IO.keyStates[IO.KEYS.DOWN]) 
-        viewport.offset.y = Math.max(0, viewport.offset.y + viewport.movementSpeed);
-    if (IO.keyStates[IO.KEYS.LEFT]) 
-        viewport.offset.x = Math.max(0, viewport.offset.x - viewport.movementSpeed);
-    else if (IO.keyStates[IO.KEYS.RIGHT])
-        viewport.offset.x = Math.max(0, viewport.offset.x + viewport.movementSpeed);
+	if (IO.keyStates[IO.KEYS.UP])
+		viewport.offset.y = Math.max(0, viewport.offset.y - viewport.movementSpeed);
+	else if (IO.keyStates[IO.KEYS.DOWN]) 
+		viewport.offset.y = Math.max(0, viewport.offset.y + viewport.movementSpeed);
+	if (IO.keyStates[IO.KEYS.LEFT]) 
+		viewport.offset.x = Math.max(0, viewport.offset.x - viewport.movementSpeed);
+	else if (IO.keyStates[IO.KEYS.RIGHT])
+		viewport.offset.x = Math.max(0, viewport.offset.x + viewport.movementSpeed);
 };

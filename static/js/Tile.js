@@ -9,6 +9,23 @@ Tile.tileSize = 32;
 Tile.tileSet = new Image();
 Tile.tileSet.src = 'static/images/tileset.png';
 
+Tile.NAMES = {
+	AIR: 				0,
+	GRASS:				1,
+	DIRT:				2,
+	VERTICAL_PATH:		3,
+	
+	TRAIN:				960,
+	
+	TRACK_VERTICAL:		992,
+	TRACK_HORIZONTAL:	993,
+	TRACK_BOTTOM_RIGHT:	994,
+	TRACK_BOTTOM_LEFT:	995,
+	TRACK_TOP_LEFT:		996,
+	TRACK_TOP_RIGHT:	997,
+	STATION_HORIZONTAL:	998,
+}
+
 Tile.tiles = {
 	0: 		new Tile('air', 				0, 	0),
 	1: 		new Tile('grass', 				0, 	1),
@@ -25,6 +42,10 @@ Tile.tiles = {
 	997:	new Tile('top right track',		31,	5),
 	998:	new Tile('horizontal station',	31,	6),
 };
+
+Tile.names = {
+	
+}
 
 Tile.prototype.tileY = function() {
 	return this.setPos.y * this.size;
