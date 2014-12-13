@@ -3,7 +3,7 @@ var Viewport = function() {
 	this.width;
 	this.height;
 	this.ctx;
-	this.offset = new Point(0, 0);
+	this.offset = new Vector(0, 0);
 	this.movementSpeed = 15;
 	this.scale = 2;
 	this.gui = {
@@ -22,8 +22,9 @@ Viewport.prototype.init = function() {
 	this.ctx = this.canvas.getContext("2d");
 	this.canvas.width = this.width;
 	this.canvas.height = this.height;
-	this.offset.set(this.height/2, this.width/2);
+	this.offset.set(this.width/2, this.height/2);
 	this.ctx.imageSmoothingEnabled = false;
+	console.log("Viewport initialized.");
 };
 
 Viewport.prototype.wipe = function() {
@@ -34,7 +35,7 @@ Viewport.prototype.wipe = function() {
 Viewport.prototype.renderGUI = function() {
 	
 	// Crosshairs
-	var ctr = new Point(this.height / 2, this.width / 2);
+	var ctr = new Vector(this.width / 2, this.height / 2);
 	this.ctx.fillStyle = 'black';
 	// Horizontal line
 	this.ctx.fillRect(	ctr.x - this.gui.crosshair.length/2,

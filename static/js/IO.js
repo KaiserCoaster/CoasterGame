@@ -1,5 +1,6 @@
 var IO = function() {
 	this.startListeners();
+	console.log("IO listeners started.");
 };
 
 IO.KEYS = {
@@ -27,11 +28,11 @@ IO.prototype.mousewheel = function(e) {
 	var scalePercentage = $game.viewport.scale / oldScale;
 	$game.viewport.offset.x = Math.floor($game.viewport.offset.x * scalePercentage);
 	$game.viewport.offset.y = Math.floor($game.viewport.offset.y * scalePercentage);
-	/*console.log(	"delta: " + delta + 
+	console.log(	"delta: " + delta + 
 					"; oldScale: " + oldScale +
 					"; proposedScale: " + proposedScale + 
 					"; newScale: " + $game.viewport.scale +
-					"; scalePercentage: " +scalePercentage);*/
+					"; scalePercentage: " +scalePercentage);
 	e.preventDefault();
 };
 

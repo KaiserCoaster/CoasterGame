@@ -7,6 +7,7 @@ var FrameCounter = function() {
 	this.ups = 0;
 	this.now = 0;
 	this.updateFrequency = 1000;
+	console.log("Frame Counter started");
 };
 
 FrameCounter.prototype.tick = function() {

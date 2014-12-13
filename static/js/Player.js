@@ -5,4 +5,5 @@ var Player = function() {
 
 Player.prototype.login = function() {
 	this.username = prompt("What is your username?");
+	console.log(this.username + " logged in.");
 };

@@ -1,6 +1,6 @@
 var Tile = function(name, y, x, size) {
 	this.name = name;
-	this.setPos = new Point(y, x);
+	this.setPos = new Vector(x, y);
 	this.size =  typeof size !== 'undefined' ? size : 32;
 };
 
@@ -14,13 +14,16 @@ Tile.tiles = {
 	1: 		new Tile('grass', 				0, 	1),
 	2: 		new Tile('dirt',				0,	2),
 	3: 		new Tile('vertical path',		0,	3),
-
+	
+	960:	new Tile('train',				30,	0),
+	
 	992:	new Tile('vertical track',		31,	0),
 	993:	new Tile('horizontal track',	31,	1),
 	994:	new Tile('bottom right track',	31,	2),
 	995:	new Tile('bottom left track',	31,	3),
 	996:	new Tile('top left track',		31,	4),
 	997:	new Tile('top right track',		31,	5),
+	998:	new Tile('horizontal station',	31,	6),
 };
 
 Tile.prototype.tileY = function() {
@@ -31,7 +34,7 @@ Tile.prototype.tileX = function() {
 	return this.setPos.x * this.size;
 };
 
-Tile.prototype.render = function(viewport, cY, cX) {
+Tile.prototype.render = function(viewport, cX, cY) {
 	viewport.ctx.drawImage(	Tile.tileSet, 
 							this.tileX(),
 							this.tileY(),

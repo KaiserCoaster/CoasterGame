@@ -14,60 +14,63 @@ var Game = function() {
 	
 	this.map;
 	
-	this.update = function() {
-		$game.IO.process($game.viewport);
-	}
-	
-	this.render = function() {
-		$game.viewport.wipe();
-		$game.map.render($game.viewport);
-		$game.framecounter.render($game.viewport);
-		$game.viewport.renderGUI();
-	}
-	
 	this.framecounter;
-	this.loopInterval;
-	this.loop = function() {
-		$game.running = true;
-		$game.framesTime = new Date().getTime();
-		console.log("Starting game loop.");
-		$game.loopInterval = window.setInterval(function() { $game.loopLogic(); }, 0);
-	}
+	
+	this.intervalID;
+	
 	this.r = {
 		ups: 60,
 		skipTicks: 1000 / 60,
-		nextTick: (new Date).getTime(),
+		nextTick: 0,
 		maxFrameSkip: 10,
 		updates: 0,
 	}
-	this.loopLogic = function() {
-		$game.r.updates = 0;
-		while((new Date).getTime() > $game.r.nextTick && $game.r.updates < $game.r.maxFrameSkip) {
-			$game.update();
-			$game.r.nextTick += $game.r.skipTicks;
-			$game.r.updates++;
-			$game.framecounter.tick();
-		}
-		$game.render();
-		$game.framecounter.frame();
-	}
-	this.stop = function() {
-		$game.running = false;
-		clearInterval($game.loopInterval);
-		console.log("Game loop stopped.");
-	}
 	
-	this.start = function() {
-		$game.loop();
-	}
-	
-	this.init = function() {
-		$game.player = new Player();
-		$game.player.login();
-		$game.viewport = new Viewport();
-		$game.map = new Map();
-		$game.framecounter = new FrameCounter();
-		$game.IO = new IO();
-	}
-
 };
+	
+Game.prototype.update = function() {
+	this.IO.process(this.viewport);
+	this.map.update();
+};
+	
+Game.prototype.render = function() {
+	this.viewport.wipe();
+	this.map.render(this.viewport);
+	this.framecounter.render(this.viewport);
+	this.viewport.renderGUI();
+};
+
+Game.prototype.loop = function() {
+	this.r.updates = 0;
+	while((new Date).getTime() > this.r.nextTick && this.r.updates < this.r.maxFrameSkip) {
+		this.update();
+		this.r.nextTick += this.r.skipTicks;
+		this.r.updates++;
+		this.framecounter.tick();
+	}
+	this.render();
+	this.framecounter.frame();
+};
+
+Game.prototype.start = function() {
+	this.running = true;
+	console.log("Starting game loop.");
+	this.r.nextTick = (new Date).getTime();
+	this.intervalID = window.setInterval(function() { $game.loop(); }, 0);
+};
+
+Game.prototype.stop = function() {
+	this.running = false;
+	clearInterval(this.intervalID);
+	console.log("Game loop stopped.");
+};
+
+Game.prototype.init = function() {
+	this.player = new Player();
+	this.player.login();
+	this.viewport = new Viewport();
+	this.map = new Map();
+	this.framecounter = new FrameCounter();
+	this.IO = new IO();
+};
+

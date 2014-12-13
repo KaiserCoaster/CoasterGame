@@ -4,6 +4,8 @@ var Map = function() {
 	this.mapObjects;
 	this.generateGround();
 	this.load();
+	this.trains = {};
+	this.trains[0] = new Train(1,0);
 };
 
 Map.prototype.generateGround = function(genSize, returnMap) {
@@ -44,6 +46,13 @@ Map.prototype.generateMap = function(genSize, returnMap) {
 		this.mapObjects = newMap;
 };
 
+Map.prototype.update = function() {
+	// Update trains
+	for(var t in this.trains) {
+		this.trains[t].progress();
+	}
+}
+
 Map.prototype.render = function(viewport) {
 	
 	// Compute what tiles are within viewport
@@ -75,12 +84,17 @@ Map.prototype.render = function(viewport) {
 	
 	// Render objects on top of ground
 	this.renderLayer(viewport, this.mapObjects, startX, endX, startY, endY, startPosX, startPosY);
+	
+	// Render trains
+	for(var t in this.trains) {
+		this.trains[t].render(viewport);
+	}
 };
 
 Map.prototype.renderLayer = function(viewport, layer, startX, endX, startY, endY) {
 	var scaledTile = Tile.tileSize * viewport.scale;
-	var center = new Point(viewport.height / 2, viewport.width / 2);
-	var gridPos = new Point(0, 0);
+	var center = new Vector(viewport.width / 2, viewport.height / 2);
+	var gridPos = new Vector(0, 0);
 	var layerCell;
 	for(y = startY; y < endY; y++) {
 		if(y < 0) continue;
@@ -89,8 +103,11 @@ Map.prototype.renderLayer = function(viewport, layer, startX, endX, startY, endY
 			if(x < 0) continue;
 			if(x >= this.size) break;
 			layerCell = layer[y][x];
-			gridPos.set(scaledTile * y, scaledTile * x);
-			Tile.tiles[layerCell].render(viewport, center.y - viewport.offset.y + gridPos.y, center.x - viewport.offset.x + gridPos.x);
+			gridPos.set(scaledTile * x, scaledTile * y);
+			Tile.tiles[layerCell].render(	viewport,
+											center.x - viewport.offset.x + gridPos.x,
+											center.y - viewport.offset.y + gridPos.y
+			);
 		}
 	}
 };
