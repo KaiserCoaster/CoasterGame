@@ -109,42 +109,93 @@ Train.prototype.trackVertical = function() {
 };
 
 Train.prototype.trackBottomLeft = function() {
-	this.rotateTo(Math.PI / 2);
-	this.offset.y++
-	this.offset.x++;
-	if(this.offset.y >= Tile.tileSize) {
-		this.rotateTo(Math.PI / 2);
-		this.offset.y = 0;
-		this.onTile.y++;
+	if(Train.accuracy(this.angle, 2 * Math.PI)) { // Moving Right
+		//this.rotateTo(Math.PI / 2);
+		this.offset.y++
+		this.offset.x++;
+		if(this.offset.y >= Tile.tileSize) {
+			this.rotateTo(Math.PI / 2);
+			this.offset.y = 0;
+			this.onTile.y++;
+		}
+	}
+	else if(Train.accuracy(this.angle, 3 * Math.PI / 2)) { // Moving Up
+		//this.rotateTo(Math.PI);
+		this.offset.y--
+		this.offset.x--;
+		if(this.offset.x <= 0) {
+			this.rotateTo(Math.PI);
+			this.offset.x = 32;
+			this.onTile.x--;
+		}
 	}
 };
 
 Train.prototype.trackBottomRight = function() {
-	this.rotateTo(0);
-	this.offset.y--;
-	this.offset.x++;
-	if(this.offset.x >= Tile.tileSize) {
-		this.offset.x = 0;
-		this.onTile.x++;
+	if(Train.accuracy(this.angle, Math.PI)) { // Moving Left
+		//this.rotateTo(Math.PI);
+		this.offset.y++
+		this.offset.x--;
+		if(this.offset.y >= Tile.tileSize) {
+			this.rotateTo(Math.PI / 2);
+			this.offset.y = 0;
+			this.onTile.y++;
+		}
+	}
+	else if(Train.accuracy(this.angle, 3 * Math.PI / 2)) { // Moving Up
+		//this.rotateTo(0);
+		this.offset.y--;
+		this.offset.x++;
+		if(this.offset.x >= Tile.tileSize) {
+			this.rotateTo(0);
+			this.offset.x = 0;
+			this.onTile.x++;
+		}
 	}
 };
 
 Train.prototype.trackTopLeft = function() {
-	this.rotateTo(Math.toRad(180));
-	this.offset.y++
-	this.offset.x--;
-	if(this.offset.x < 0) {
-		this.offset.x = 32;
-		this.onTile.x--;
+	if(Train.accuracy(this.angle, 2 * Math.PI)) { // Moving Right
+		//this.rotateTo(Math.toRad(270));
+		this.offset.y--
+		this.offset.x++;
+		if(this.offset.y <= 0) {
+			this.rotateTo(Math.toRad(270));
+			this.offset.y = 32;
+			this.onTile.y--;
+		}
+	}
+	else if(Train.accuracy(this.angle, Math.PI / 2)) { // Moving Down
+		//this.rotateTo(Math.toRad(180));
+		this.offset.y++
+		this.offset.x--;
+		if(this.offset.x <= 0) {
+			this.rotateTo(Math.toRad(180));
+			this.offset.x = 32;
+			this.onTile.x--;
+		}
 	}
 };
 
 Train.prototype.trackTopRight = function() {
-	this.rotateTo(Math.toRad(270));
-	this.offset.y--
-	this.offset.x--;
-	if(this.offset.y < 0) {
-		this.offset.y = 32;
-		this.onTile.y--;
+	if(Train.accuracy(this.angle, Math.PI)) { // Moving Left
+		//this.rotateTo(Math.toRad(270));
+		this.offset.y--
+		this.offset.x--;
+		if(this.offset.y <= 0) {
+			this.rotateTo(Math.toRad(270));
+			this.offset.y = 32;
+			this.onTile.y--;
+		}
+	}
+	else if(Train.accuracy(this.angle, Math.PI/2)) { // Moving Down
+		//this.rotateTo(0);
+		this.offset.y++
+		this.offset.x++;
+		if(this.offset.x >= Tile.tileSize) {
+			this.rotateTo(0);
+			this.offset.x = 0;
+			this.onTile.x++;
+		}
 	}
 };
