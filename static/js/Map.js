@@ -2,21 +2,26 @@ var Map = function() {
 	this.size = 512;
 	this.mapGround;
 	this.mapObjects;
-	this.trains = [];
+	this.tracks = [];
 	this.generateGround();
 	this.load();
+	for(var t in this.tracks) {
+		this.tracks[t].build(this.mapObjects);
+	}
 };
 
 Map.prototype.generateGround = function(genSize, returnMap) {
 	genSize = typeof genSize !== 'undefined' ?  genSize : -1;
 	returnMap = typeof returnMap !== 'undefined' ?  returnMap : false;
 	console.log("Generating ground..");
+	var grassTextures = [1, 32, 33, 34];
 	var gensize = genSize > 0 ? genSize : this.size;
 	var newMap = new Array(gensize);
 	for(y = 0; y < gensize; y++) {
 		newMap[y] = new Array(gensize);
 		for(x = 0; x < gensize; x++) {
-			newMap[y][x] = 1;
+			var rand = Math.floor(Math.random() * grassTextures.length);
+			newMap[y][x] = grassTextures[rand];
 		}
 	}
 	console.log("Ground generation complete.");
@@ -47,8 +52,8 @@ Map.prototype.generateMap = function(genSize, returnMap) {
 
 Map.prototype.update = function() {
 	// Update trains
-	for(var t in this.trains) {
-		this.trains[t].progress();
+	for(var t in this.tracks) {
+		this.tracks[t].update();
 	}
 }
 
@@ -78,8 +83,8 @@ Map.prototype.render = function(viewport) {
 	this.renderLayer(viewport, this.mapObjects, startX, endX, startY, endY);
 	
 	// Render trains
-	for(var t in this.trains) {
-		this.trains[t].render(viewport);
+	for(var t in this.tracks) {
+		this.tracks[t].render(viewport);
 	}
 };
 
@@ -117,14 +122,14 @@ Map.prototype.load = function() {
 		//console.log(response);
 		response = JSON.parse(response);
 		if(response.map_exists) {
-			data = JSON.parse(response.data);
+			var data = JSON.parse(response.data);
 			//console.log(data);
-			map = JSON.parse(data.map);
+			var map = JSON.parse(data.map);
 			$this.mapObjects = map;
 			for(y = 0; y < map.length; y++) {
 				for(x = 0; x < map.length; x++) {
 					if(map[y][x] == Tile.NAMES.STATION_HORIZONTAL) {
-						$this.trains.push(new Train(x, y));
+						$this.tracks.push(new Track(x, y));
 					}
 				}
 			}

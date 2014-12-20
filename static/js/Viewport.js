@@ -5,12 +5,19 @@ var Viewport = function() {
 	this.ctx;
 	this.offset = new Vector(0, 0);
 	this.movementSpeed = 15;
-	this.scale = 2;
+	this.scale = 1;
 	this.gui = {
 		crosshair: {
 			length: 20,
 			width: 2,
 		},
+		path: {
+			rendering: true,
+			lineColor: "#0F0",
+			lineWidth: 2,
+			nodeColor: "#0F0",
+			nodeSize: 2,
+		}
 	}
 	this.init();
 };
@@ -25,6 +32,26 @@ Viewport.prototype.init = function() {
 	this.offset.set(this.width/2, this.height/2);
 	this.ctx.imageSmoothingEnabled = false;
 	console.log("Viewport initialized.");
+};
+
+Viewport.prototype.moveUp = function(delta) {
+	delta = typeof genSize !== 'undefined' ?  delta : this.movementSpeed;
+	this.offset.y = Math.max(0, this.offset.y - delta);
+};
+
+Viewport.prototype.moveLeft = function(delta) {
+	delta = typeof genSize !== 'undefined' ?  delta : this.movementSpeed;
+	this.offset.x = Math.max(0, this.offset.x - delta);
+};
+
+Viewport.prototype.moveRight = function(delta) {
+	delta = typeof genSize !== 'undefined' ?  delta : this.movementSpeed;
+	this.offset.x = Math.max(0, this.offset.x + delta);
+};
+
+Viewport.prototype.moveDown = function(delta) {
+	delta = typeof genSize !== 'undefined' ?  delta : this.movementSpeed;
+	this.offset.y = Math.max(0, this.offset.y + delta);
 };
 
 Viewport.prototype.wipe = function() {
