@@ -3,24 +3,15 @@ var Track = function(x, y) {
 	this.curves = [];
 	this.path = document.createElementNS('http://www.w3.org/2000/svg','path');
 	this.pathString;
-	this.train = new Train(x, y);
+	this.train = new Train(this, x, y);
 	this.progress = 0;
 	this.length = 0;
+	this.friction = .05;
 };
 
 Track.prototype.update = function() {
-	// Calculate how much "track progression percentage" to increase based on train's speed.
-	var delta = (this.train.speed / this.length / 60);
-	this.progress+= delta;
-	if(this.progress >= 1)
-		this.progress = 0;
-	var point = this.path.getPointAtLength(this.length * this.progress);
-	this.train.position.set(point.x, point.y);
-	var p1p = (this.progress > .01) ? (this.progress - .01) : 0;
-	var p2p = (this.progress < .99) ? (this.progress + .01) : 1;
-	var p1 = this.path.getPointAtLength(this.length * p1p);
-	var p2 = this.path.getPointAtLength(this.length * p2p);
-	this.train.angle = Math.atan2(p2.y-p1.y,p2.x-p1.x);
+	// Update train's progression, position, rotation, speed, etc.
+	this.train.update();
 };
 
 Track.prototype.render = function(viewport) {
@@ -47,12 +38,12 @@ Track.prototype.build = function(map) {
 	
 	while(true) {
 		tType = map[tileOffset.y][tileOffset.x];
-		// if not a track
-		if(tType < 992 || tType > 997)
+		// if not a track or station track
+		if(typeof tType === 'undefined' || tType < 992 || tType > 1003 || tType == Tile.NAMES.STATION_HORIZONTAL)
 			break;
 		t = Tile.tiles[tType];
 		
-		var reflectedNode = Track.reflect(currentNode, t.tileSize);
+		var reflectedNode = Track.reflect(currentNode, Tile.tileSize);
 			
 		var curve = t.curve.newCurveOrientedFrom(reflectedNode);
 		// Nodes don't match

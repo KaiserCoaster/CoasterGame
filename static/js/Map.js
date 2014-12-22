@@ -1,8 +1,9 @@
 var Map = function() {
-	this.size = 512;
+	this.size = 64;
 	this.mapGround;
 	this.mapObjects;
 	this.tracks = [];
+	this.highlight = V(0, 0);
 	this.generateGround();
 	this.load();
 	for(var t in this.tracks) {
@@ -51,7 +52,7 @@ Map.prototype.generateMap = function(genSize, returnMap) {
 };
 
 Map.prototype.update = function() {
-	// Update trains
+	// Update trains.
 	for(var t in this.tracks) {
 		this.tracks[t].update();
 	}
@@ -59,7 +60,7 @@ Map.prototype.update = function() {
 
 Map.prototype.render = function(viewport) {
 	
-	// Compute what tiles are within viewport
+	// Compute what tiles are within viewport.
 	var scaledTile = Tile.tileSize * viewport.scale;
 	var centerX = viewport.width / 2;
 	var centerY = viewport.height / 2;
@@ -76,22 +77,53 @@ Map.prototype.render = function(viewport) {
 					"; startPosX: " + startPosX +
 					"; startPosY: " + startPosY + ";");*/
 	
-	// Render ground first
+	// Render ground first.
 	this.renderLayer(viewport, this.mapGround, startX, endX, startY, endY);
 	
-	// Render objects on top of ground
+	// Render objects on top of ground.
 	this.renderLayer(viewport, this.mapObjects, startX, endX, startY, endY);
 	
-	// Render trains
+	// Render trains.
 	for(var t in this.tracks) {
 		this.tracks[t].render(viewport);
 	}
+	
+	// Render highlighted tile.
+	// Update highlighted tile.
+	this.highlight.set(	Math.floor((IO.mousePos.x - centerX + viewport.offset.x) / scaledTile),
+						Math.floor((IO.mousePos.y - centerY + viewport.offset.y) / scaledTile)
+	);
+	viewport.ctx.fillStyle = viewport.gui.selector.fillColor;
+	viewport.ctx.fillRect(	Math.ceil(centerX - viewport.offset.x + scaledTile * this.highlight.x),
+							Math.ceil(centerY - viewport.offset.y + scaledTile * this.highlight.y),
+							scaledTile,
+							scaledTile
+	);
+	var lineWidth = (viewport.gui.selector.lineScale) ? 
+						viewport.gui.selector.lineWidth * viewport.scale : 
+						viewport.gui.selector.lineWidth;
+	if(lineWidth > 0) {
+		viewport.ctx.strokeStyle = viewport.gui.selector.lineColor;
+		viewport.ctx.lineWidth = lineWidth;
+		viewport.ctx.strokeRect(Math.ceil(centerX - viewport.offset.x + scaledTile * this.highlight.x) + (lineWidth / 2),
+								Math.ceil(centerY - viewport.offset.y + scaledTile * this.highlight.y) + (lineWidth / 2),
+								scaledTile - lineWidth,
+								scaledTile - lineWidth
+		);
+	}
+	viewport.ctx.save();
+	viewport.ctx.globalAlpha = 0.4;
+	Tile.tiles[selected].render(viewport,
+								Math.ceil(centerX - viewport.offset.x + scaledTile * this.highlight.x) + (lineWidth / 2), 
+								Math.ceil(centerY - viewport.offset.y + scaledTile * this.highlight.y) + (lineWidth / 2));
+	viewport.ctx.restore();
+	
 };
 
 Map.prototype.renderLayer = function(viewport, layer, startX, endX, startY, endY) {
 	var scaledTile = Tile.tileSize * viewport.scale;
-	var center = new Vector(viewport.width / 2, viewport.height / 2);
-	var gridPos = new Vector(0, 0);
+	var center = V(viewport.width / 2, viewport.height / 2);
+	var gridPos = V(0, 0);
 	var layerCell;
 	for(y = startY; y < endY; y++) {
 		if(y < 0) continue;
@@ -126,6 +158,7 @@ Map.prototype.load = function() {
 			//console.log(data);
 			var map = JSON.parse(data.map);
 			$this.mapObjects = map;
+			console.log(map);
 			for(y = 0; y < map.length; y++) {
 				for(x = 0; x < map.length; x++) {
 					if(map[y][x] == Tile.NAMES.STATION_HORIZONTAL) {
@@ -173,4 +206,20 @@ Map.prototype.resize = function(newSize) {
 	this.size = newSize;
 	this.mapGround = newGround;
 	this.mapObjects = newObjects;
+};
+
+Map.prototype.fix = function() {
+	for(y = 0; y < this.mapObjects.length; y++) {
+		for(x = 0; x < this.mapObjects.length; x++) {
+			this.mapObjects[y][x] = parseInt(this.mapObjects[y][x], 10);
+		}
+	}
+}
+
+Map.prototype.set = function(x, y, tile) {
+	if(x < 0 || y < 0 || x >= this.size || y >= this.size) {
+		console.log("Out of bounds");
+		return;
+	}
+	this.mapObjects[y][x] = tile;
 };

@@ -5,18 +5,24 @@ var Viewport = function() {
 	this.ctx;
 	this.offset = new Vector(0, 0);
 	this.movementSpeed = 15;
-	this.scale = 1;
+	this.scale = 2;
 	this.gui = {
 		crosshair: {
 			length: 20,
 			width: 2,
 		},
 		path: {
-			rendering: true,
+			rendering: false,
 			lineColor: "#0F0",
 			lineWidth: 2,
 			nodeColor: "#0F0",
 			nodeSize: 2,
+		},
+		selector: {
+			lineColor: 'rgba(255,255,255,.3)',
+			lineWidth: 0,
+			lineScale: true,
+			fillColor: 'rgba(255,255,255,.3)',
 		}
 	}
 	this.init();

@@ -26,7 +26,7 @@ IO.prototype.startListeners = function() {
 	document.addEventListener("mousewheel", this.mousewheel);
 	document.addEventListener("keydown", this.key);
 	document.addEventListener("keyup", this.key);
-	//document.addEventListener("mousemove", this.mouse)
+	document.addEventListener("mousemove", this.mouse)
 };
 
 IO.prototype.mousewheel = function(e) {
@@ -88,13 +88,13 @@ IO.prototype.process = function(viewport) {
 		viewport.moveRight();
 		
 	// Process mouse offset movements
-	if(IO.mousePos.y >= 0 && IO.mousePos.y <= IO.mouseDistance)
+	/*if(IO.mousePos.y >= 0 && IO.mousePos.y <= IO.mouseDistance)
 		viewport.moveUp();
 	else if(IO.mousePos.y >= (viewport.height - IO.mouseDistance) && IO.mousePos.y <= viewport.height)
 		viewport.moveDown();
 	else if(IO.mousePos.x >= 0 && IO.mousePos.x <= IO.mouseDistance)
 		viewport.moveLeft();
 	else if(IO.mousePos.x >= (viewport.width - IO.mouseDistance) && IO.mousePos.x <= viewport.width)
-		viewport.moveRight();
+		viewport.moveRight();*/
 	
 };
