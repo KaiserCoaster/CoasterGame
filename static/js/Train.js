@@ -1,13 +1,39 @@
-var Train = function(track, x, y) {
+/**
+ * Train object for coasters.
+ *
+ * @author Matthew Kaiser
+ * @url http://mkaiser.io
+ */
+ 
+ 
+/** 
+ * @constructor
+ * @desc Train Object.
+ * @param Track track - the track that this train is on. Needed for traversing path.
+ * @param int x - tile x offset
+ * @param int y - tile y offset
+ */ 
+ var Train = function(track, x, y) {
+	// Track this train is on.
 	this.track = track;
-	this.angle = 2 * Math.PI;
+	// Angle of train. Default to 0.
+	this.angle = 0;
+	// Speed in pixels per second.
 	this.speed = 50;
+	// The train tile.
 	this.tile = Tile.tiles[Tile.NAMES.TRAIN];
+	// Pixel Position on the map.
 	this.position = V( (x*Tile.tileSize)+16, (y*Tile.tileSize)+16 );
+	// Pixel Progression through the track.
 	this.progress = 16;
+	// Counter for the station. (Stays in the station for 3 sec)
 	this.stationCounter = 0;
 };
 
+
+/**
+ * @desc Train update tick. Process train logic.
+ */
 Train.prototype.update = function() {
 	// Preform track specific functions (Booster, brake, etc.)
 	this.trackAction();
@@ -20,11 +46,13 @@ Train.prototype.update = function() {
 	
 	// Move train delta pixels
 	this.move(delta);
-	
-	//console.log(this.speed);
-
 };
 
+
+/**
+ * @desc Train render/draw .
+ * @param Viewport viewport - the viewport object containing the canvas context for rendering.
+ */
 Train.prototype.render = function(viewport) {
 	var scaledTile = viewport.scale * Tile.tileSize;
 	var ctr = V(viewport.width/2, viewport.height/2);
@@ -37,13 +65,14 @@ Train.prototype.render = function(viewport) {
 	viewport.ctx.restore();
 };
 
+
+/**
+ * @desc Preforms a specific action depending on what type of track the train is currently on. (boost, brake, etc.)
+ */
 Train.prototype.trackAction = function() {
 	// Get what track type the train is on.
 	var tilePos = V(Math.floor(this.position.x / Tile.tileSize), Math.floor(this.position.y / Tile.tileSize));
 	var track  = $game.map.mapObjects[tilePos.y][tilePos.x];
-	
-	//console.log(tilePos.x + " " + tilePos.y);
-	//console.log(track + " - " + Tile.NAMES.TRACK_HORIZ_BOOST);
 	
 	// Preform a specific action depending on the track type
 	switch(track) {
@@ -76,6 +105,12 @@ Train.prototype.trackAction = function() {
 	}
 }
 
+
+/**
+ * @desc Increase speed of train
+ * @param int delta - Amount to increase speed. (in pixels per second)
+ * @param int max - Upper speed bound. (Don't cross it if supplied)
+ */
 Train.prototype.faster = function(delta, max) {
 	// If max is given..
 	if(typeof max !== 'undefined') {
@@ -93,6 +128,12 @@ Train.prototype.faster = function(delta, max) {
 	this.speed += (this.speed > 0) ? delta : -delta;
 };
 
+
+/**
+ * @desc Decrease speed of train
+ * @param int delta - Amount to decrease speed. (in pixels per second)
+ * @param int min - Lower speed bound. (Don't cross it if supplied)
+ */
 Train.prototype.slower = function(delta, min) {
 	// If min is given..
 	if(typeof min !== 'undefined') {
@@ -114,6 +155,11 @@ Train.prototype.slower = function(delta, min) {
 		this.speed += (this.speed > 0) ? -delta : delta;
 };
 
+
+/**
+ * @desc Move the train a certain amount of pixels along the track.
+ * @param int delta - number of pixels to move train. Can be + or -.
+ */
 Train.prototype.move = function(delta) {
 	if(delta != 0) {
 		this.progress+= delta;
