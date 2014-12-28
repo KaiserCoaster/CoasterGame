@@ -1,9 +1,25 @@
+/**
+ * IO (Input/Output) handles keyboard and mouse actions.
+ *
+ * @author Matthew Kaiser
+ * @url http://mkaiser.io
+ */
+ 
+ 
+/** 
+ * @constructor
+ * @desc IO Object.
+ */ 
 var IO = function() {
-	IO.mousePos = new Vector(100, 100);
+	// Init mouse position to 100,100
+	IO.mousePos = V(100, 100);
+	// Start key and mouse listeners
 	this.startListeners();
 	console.log("IO listeners started.");
 };
 
+
+// ENUM mapping keyboard keys/names to their event IDs.
 IO.KEYS = {
 	UP: 38,
 	DOWN: 40,
@@ -15,13 +31,19 @@ IO.KEYS = {
 	D: 68,
 }
 
+// Stores state of each key. (True if held down, false otherwise).
 IO.keyStates = [];
 
+// Vector holding mouse position within window.
 IO.mousePos;
 
+// For moving the map using the mouse. This is the width of the border area near the screen edges that causes the map to move.
 IO.mouseDistance = 20;
 
 
+/**
+ * @desc Initiates event listeners for keyboard and mouse.
+ */
 IO.prototype.startListeners = function() {
 	document.addEventListener("mousewheel", this.mousewheel);
 	document.addEventListener("keydown", this.key);
@@ -29,6 +51,11 @@ IO.prototype.startListeners = function() {
 	document.addEventListener("mousemove", this.mouse)
 };
 
+
+/**
+ * @desc Event handler for mousewheel. Scrolling causes map to zoom.
+ * @param Event e - the event information.
+ */
 IO.prototype.mousewheel = function(e) {
 	var e = window.event || e;
 	var delta = Math.max(-1, Math.min(1, (e.wheelDelta || -e.detail)));
@@ -46,12 +73,22 @@ IO.prototype.mousewheel = function(e) {
 	e.preventDefault();
 };
 
+
+/**
+ * @desc Event handler for key presses. Updates state in keyState array. (true = down, false = up)
+ * @param Event e - the event information.
+ */
 IO.prototype.key = function(e) {
     e = e || window.event;
     IO.keyStates[e.keyCode] = (e.type == 'keydown');
     e.preventDefault();
 };
 
+
+/**
+ * @desc Event handler for mouse movement. Updates mousePos position.
+ * @param Event e - the event information.
+ */
 IO.prototype.mouse = function(e) {
 	var dot, eventDoc, doc, body, pageX, pageY;
 	e = e || window.event; // IE-ism
@@ -73,18 +110,23 @@ IO.prototype.mouse = function(e) {
 	
 	IO.mousePos.x = e.pageX;
 	IO.mousePos.y = e.pageY;
-}
+};
 
+
+/**
+ * @desc Tick update to process the key presses.
+ * @param Viewport viewport - Viewport object, used to move the map viewport offset via key presses.
+ */
 IO.prototype.process = function(viewport) {
 	
 	// Process key presses
-	if (IO.keyStates[IO.KEYS.UP])
+	if (IO.keyStates[IO.KEYS.UP] || IO.keyStates[IO.KEYS.W])
 		viewport.moveUp();
-	else if (IO.keyStates[IO.KEYS.DOWN]) 
+	else if (IO.keyStates[IO.KEYS.DOWN] || IO.keyStates[IO.KEYS.S]) 
 		viewport.moveDown();
-	if (IO.keyStates[IO.KEYS.LEFT]) 
+	if (IO.keyStates[IO.KEYS.LEFT] || IO.keyStates[IO.KEYS.A]) 
 		viewport.moveLeft();
-	else if (IO.keyStates[IO.KEYS.RIGHT])
+	else if (IO.keyStates[IO.KEYS.RIGHT] || IO.keyStates[IO.KEYS.D])
 		viewport.moveRight();
 		
 	// Process mouse offset movements
