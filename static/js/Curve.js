@@ -37,3 +37,14 @@ Curve.prototype.newCurveOrientedFrom = function(fromnode) {
 	else
 		return false;
 };
+
+Curve.prototype.newRotatedCurve = function(rot) {
+	var rad = rot * (Math.PI / 2);
+	var size = Math.max(this.node1.x, this.node1.y, this.node2.x, this.node2.y) / 2;
+	var around = V(size, size);
+	return new Curve(	this.node1.rotateAround(rad, around),
+						this.node2.rotateAround(rad, around),
+						this.node1cp.rotateAround(rad, around),
+						this.node2cp.rotateAround(rad, around)
+	);
+};

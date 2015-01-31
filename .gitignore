@@ -2,3 +2,6 @@
 manage.py
 
 models.py
+
+/static/old/
+templates/old.html

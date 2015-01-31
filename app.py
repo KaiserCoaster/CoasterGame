@@ -16,6 +16,11 @@ saves = db.saves
 @app.route('/index')
 def index():
 	return render_template('index.html')
+	
+
+@app.route('/oldgame')
+def oldcode():
+	return render_template('old.html')
 
                     
 @app.route('/loadMap', methods=['POST'])

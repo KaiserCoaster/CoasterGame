@@ -2,13 +2,16 @@ var Map = function() {
 	this.size = 64;
 	this.mapGround;
 	this.mapObjects;
-	this.tracks = [];
+	this.coasters = [];
 	this.highlight = V(0, 0);
 	this.generateGround();
 	this.load();
-	for(var t in this.tracks) {
+	/*for(var t in this.tracks) {
 		this.tracks[t].build(this.mapObjects);
-	}
+	}*/
+	this.coasters[0] = new Coaster();
+	this.coasters[0].init();
+	this.coasters[0].dev();
 };
 
 Map.prototype.generateGround = function(genSize, returnMap) {
@@ -83,9 +86,9 @@ Map.prototype.render = function(viewport) {
 	// Render objects on top of ground.
 	this.renderLayer(viewport, this.mapObjects, startX, endX, startY, endY);
 	
-	// Render trains.
-	for(var t in this.tracks) {
-		this.tracks[t].render(viewport);
+	// Render coasters.
+	for(var c in this.coasters) {
+		this.coasters[c].render(viewport);
 	}
 	
 	// Render highlighted tile.
@@ -123,7 +126,7 @@ Map.prototype.render = function(viewport) {
 Map.prototype.renderLayer = function(viewport, layer, startX, endX, startY, endY) {
 	var scaledTile = Tile.tileSize * viewport.scale;
 	var center = V(viewport.width / 2, viewport.height / 2);
-	var gridPos = V(0, 0);
+	var viewportPos;
 	var layerCell;
 	for(y = startY; y < endY; y++) {
 		if(y < 0) continue;
@@ -132,10 +135,10 @@ Map.prototype.renderLayer = function(viewport, layer, startX, endX, startY, endY
 			if(x < 0) continue;
 			if(x >= this.size) break;
 			layerCell = layer[y][x];
-			gridPos.set(scaledTile * x, scaledTile * y);
+			viewportPos = viewport.mapToViewportCoordinates( V(x, y) );
 			Tile.tiles[layerCell].render(	viewport,
-											center.x - viewport.offset.x + gridPos.x,
-											center.y - viewport.offset.y + gridPos.y
+											viewportPos.x,
+											viewportPos.y
 			);
 		}
 	}
@@ -158,14 +161,14 @@ Map.prototype.load = function() {
 			//console.log(data);
 			var map = JSON.parse(data.map);
 			$this.mapObjects = map;
-			console.log(map);
+			/*console.log(map);
 			for(y = 0; y < map.length; y++) {
 				for(x = 0; x < map.length; x++) {
 					if(map[y][x] == Tile.NAMES.STATION_HORIZONTAL) {
 						$this.tracks.push(new Track(x, y));
 					}
 				}
-			}
+			}*/
 			console.log("Done loading map.");
 		}
 		else {

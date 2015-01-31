@@ -53,7 +53,14 @@
 	
 	<ul id="tilePicker"></ul>
 
-
+	<script>
+				
+		function extend(ChildClass, ParentClass) {
+			ChildClass.prototype = new ParentClass();
+			ChildClass.prototype.constructor = ChildClass;
+		}
+		
+	</script>
 	<script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 	<script src="/static/js/Game.js"></script>
 	<script src="/static/js/IO.js"></script>
@@ -63,11 +70,45 @@
 	<script src="/static/js/Map.js"></script>
 	<script src="/static/js/Curve.js"></script>
 	<script src="/static/js/Tile.js"></script>
+	<script src="/static/js/Tiles/Grass.js"></script>
+	<script src="/static/js/Tiles/TrackStation.js"></script>
+	<script src="/static/js/Tiles/TrackStraight.js"></script>
+	<script src="/static/js/Tiles/TrackStraightBooster.js"></script>
+	<script src="/static/js/Tiles/TrackStraightBrake.js"></script>
+	<script src="/static/js/Tiles/TrackTurn1x1.js"></script>
 	<script src="/static/js/Viewport.js"></script>
 	<script src="/static/js/Track.js"></script>
+	<script src="/static/js/Coaster.js"></script>
+	<script src="/static/js/Station.js"></script>
+	<script src="/static/js/TrackPiece.js"></script>
 	<script src="/static/js/Train.js"></script>
 	<script src="/static/js/Math.js"></script>
 	<script type="text/javascript">
+		
+		
+		// The list of all tile objects.
+		Tile.tiles = {
+			0: 		new Tile('air', 				V(0,	0) ),
+			1: 		new Tile('grass', 				V(1,	0) ),
+			2: 		new Tile('dirt',				V(2,	0) ),
+			3: 		new Tile('vertical path',		V(3,	0) ),
+			
+			32: 	new Tile('grass2', 				V(0,	1) ),
+			33: 	new Tile('grass3', 				V(1,	1) ),
+			34: 	new Tile('grass4', 				V(2,	1) ),
+			
+			960:	new Tile('train',				V(0,	30) ),
+			966:	new Tile('bottom left 2x2',		V(6,	30), 64, new Curve(V(0,16), V(48,64), V(24,16), V(48,40) ) ),
+			
+			993:	new TrackStraight(),
+			996:	new TrackTurn1x1(),
+			998:	new TrackStation(),
+			1000:	new TrackStraightBooster(),
+			1002:	new TrackStraightBrake(),
+			
+		};
+		
+
 		var game = new Game();
 		game.init();
 		game.start();

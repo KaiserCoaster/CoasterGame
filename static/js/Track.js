@@ -11,20 +11,17 @@
 /** 
  * @constructor
  * @desc Track Object.
- * @param int x - tile x coordinate of station.
- * @param int y - tile y coordinate of station.
+ * @param Coaster coaster - the coaster this track is for
  */ 
-var Track = function(x, y) {
-	// Tile coordinates of station.
-	this.station = V(x, y);
+var Track = function(coaster) {
+	// The coaster this track is for
+	this.coaster = coaster;
 	// Array of curves in this coaster.
-	this.curves = [];
+	this.pieces = [];
 	// SVG path.
 	this.path = document.createElementNS('http://www.w3.org/2000/svg','path');
 	// SVG path string.
 	this.pathString;
-	// The train on this track - init onto the station tile.
-	this.train = new Train(this, x, y);
 	// Track length in pixels.
 	this.length = 0;
 	// Friction. This value is applied to the speed every tick to slow the train.
@@ -33,24 +30,33 @@ var Track = function(x, y) {
 
 
 /**
- * @desc Track update tick. (Just update train logic.)
- */
-Track.prototype.update = function() {
-	// Update train's progression, position, rotation, speed, etc.
-	this.train.update();
-};
-
-
-/**
  * @desc Track render/draw. (Just render the train. Track is rendered as part of the mapObjects.)
  * @param Viewport viewport - the viewport containing the canvas context for rendering.
  */
 Track.prototype.render = function(viewport) {
-	// Render train
-	this.train.render(viewport);
+	// Render track
+	var pos = this.coaster.position.copy();
+	var curve;
+	for(var p in this.pieces) {
+		this.pieces[p].render(viewport, pos);
+		curve = this.pieces[p].getCurve();
+		this.nextPos(curve, pos);
+	}
 	// Render actual svg path
 	//var path = new Path2D(this.pathString);
 	//viewport.ctx.stroke(path);
+};
+
+Track.prototype.nextPos = function(curve, pos) {
+	var n = curve.node2;
+	if(n.x == 16 && n.y  == 32) // Going Down
+		pos.y++;
+	else if(n.x == 16 && n.y	== 0) // Going Up
+		pos.y--;
+	else if(n.x == 0 && n.y  == 16) // Going Left
+		pos.x--;
+	else if(n.x == 32 && n.y	== 16) // Going Right
+		pos.x++;
 };
 
 
@@ -58,7 +64,7 @@ Track.prototype.render = function(viewport) {
  * @desc Used to build the path that the train follows.
  * @param int[][] map - The mapObjects 2D array that holds tiles such as the tracks
  */
-Track.prototype.build = function(map) {
+/*Track.prototype.build = function(map) {
 	
 	var tileOffset = new Vector(this.station.x, this.station.y);
 	
@@ -67,7 +73,7 @@ Track.prototype.build = function(map) {
 	var t = Tile.tiles[tType];
 	var curve = new Curve(t.curve.node1.copy(), t.curve.node2.copy(), t.curve.node1cp.copy(), t.curve.node2cp.copy());
 	curve.pOffset.set(Tile.tileSize * tileOffset.x, Tile.tileSize * tileOffset.y);
-	this.curves.push( curve );
+	this.pieces.push( curve );
 	tileOffset.x++;
 	// set current node to the end station node
 	var currentNode = t.curve.node2;
@@ -87,7 +93,7 @@ Track.prototype.build = function(map) {
 			break;
 		curve.pOffset.set(Tile.tileSize * tileOffset.x, Tile.tileSize * tileOffset.y);
 		
-		this.curves.push( curve );
+		this.pieces.push( curve );
 		
 		currentNode = curve.node2;
 		
@@ -95,11 +101,11 @@ Track.prototype.build = function(map) {
 		var deltaTiles = t.size / Tile.tileSize;
 		if(currentNode.x == 16 && currentNode.y  == 32) // Going Down
 			tileOffset.y+=deltaTiles;
-		else if(currentNode.x == 16 && currentNode.y  == 0) // Going Up
+		else if(currentNode.x == 16 && currentNode.y	== 0) // Going Up
 			tileOffset.y-=deltaTiles;
 		else if(currentNode.x == 0 && currentNode.y  == 16) // Going Left
 			tileOffset.x-=deltaTiles;
-		else if(currentNode.x == 32 && currentNode.y  == 16) // Going Right
+		else if(currentNode.x == 32 && currentNode.y	== 16) // Going Right
 			tileOffset.x+=deltaTiles;
 	}
 	
@@ -119,7 +125,7 @@ Track.prototype.build = function(map) {
 	
 	this.length = this.path.getTotalLength()
 	
-};
+};*/
 
 
 /**
@@ -128,7 +134,7 @@ Track.prototype.build = function(map) {
  * @param int tileSize - the size of the tile.
  * return Vector - the node that the next track piece should start at.
  */
-Track.reflect = function(node, tileSize) {
+/*Track.reflect = function(node, tileSize) {
 	var nx = node.x;
 	var ny = node.y;
 	if(nx == 0) nx = 32;
@@ -136,4 +142,4 @@ Track.reflect = function(node, tileSize) {
 	if(ny == 0) ny = 32;
 	else if(node.y == 32) ny = 0;
 	return V(nx, ny);
-};
+};*/

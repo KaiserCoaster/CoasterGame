@@ -82,4 +82,13 @@ Viewport.prototype.renderGUI = function() {
 						this.gui.crosshair.length);
 };
 
+Viewport.prototype.mapToViewportCoordinates = function(mapCoordinates) {
+	var center = V(this.width / 2, this.height / 2);
+	var scaledTile = Tile.tileSize * this.scale;
+	var x = center.x - this.offset.x + (mapCoordinates.x * scaledTile);
+	var y = center.y - this.offset.y + (mapCoordinates.y * scaledTile);
+	var viewportCoordinates = V(x, y);
+	return viewportCoordinates;
+};
+
 //Viewport.prototype.view

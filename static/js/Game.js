@@ -91,13 +91,14 @@ Game.prototype.stop = function() {
  * @desc Initializes game objects and game state.
  */ 
 Game.prototype.init = function() {
+	console.log("Initializing game.");
 	this.player = new Player();
 	this.player.login();
 	this.viewport = new Viewport();
 	this.map = new Map();
 	this.framecounter = new FrameCounter();
 	this.IO = new IO();
-	var placeable = [0, 992, 993, 994, 995, 996, 997, 998, 1000, 1001, 1002, 1003];
+	/*var placeable = [0, 992, 993, 994, 995, 996, 997, 998, 1000, 1001, 1002, 1003];
 	for(t in placeable) {
 		var tid = placeable[t];
 		var tt = $("<li />")
@@ -108,6 +109,6 @@ Game.prototype.init = function() {
 			}
 		);
 		$("#tilePicker").append(tt);
-	}
+	}*/
 };
 
