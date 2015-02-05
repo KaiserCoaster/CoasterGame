@@ -5,10 +5,10 @@ var TrackPiece = function(tileID, orientation, startNode) {
 };
 
 TrackPiece.prototype.render = function(viewport, pos) {
-	// rotate piece
-	// render piece
+	// rotate & render piece
 	var viewportPos = viewport.mapToViewportCoordinates( pos );
-	Tile.tiles[this.tileID].render(viewport, viewportPos.x, viewportPos.y);
+	var rad = this.orientation * (Math.PI / 2);
+	Tile.tiles[this.tileID].rotatedRender(viewport, viewportPos.x, viewportPos.y, rad);
 	this.renderSpline(viewport, viewportPos);
 };
 
@@ -16,7 +16,7 @@ TrackPiece.prototype.getCurve = function() {
 	// return curve based on startNode
 	var curve = Tile.tiles[this.tileID].curve;
 	if(this.orientation != 0)
-		curve = curve.newRotatedCurve(this.orientation);
+		curve = curve.newRotatedCurve(this.orientation, Tile.tiles[this.tileID].size);
 	if(this.startNode != 0)
 		curve = curve.newCurveOrientedFrom(curve.node2);
 	return curve;

@@ -21,7 +21,7 @@
 	// Speed in pixels per second.
 	this.speed = 50;
 	// The train tile.
-	this.tile = Tile.tiles[Tile.NAMES.TRAIN];
+	this.tile = TrainTile;
 	// Pixel Position on the map.
 	this.position = V( (x*Tile.tileSize)+16, (y*Tile.tileSize)+16 );
 	// Pixel Progression through the track.
@@ -50,19 +50,20 @@ Train.prototype.update = function() {
 
 
 /**
- * @desc Train render/draw .
+ * @desc Train render/draw.
  * @param Viewport viewport - the viewport object containing the canvas context for rendering.
  */
 Train.prototype.render = function(viewport) {
-	var scaledTile = viewport.scale * Tile.tileSize;
+	/*var scaledTile = viewport.scale * Tile.tileSize;
 	var ctr = V(viewport.width/2, viewport.height/2);
 	viewport.ctx.save(); 
 	viewport.ctx.translate(	Math.ceil(ctr.x - viewport.offset.x + (this.position.x * viewport.scale)),
 							Math.ceil(ctr.y - viewport.offset.y + (this.position.y * viewport.scale))
-	); 
-	viewport.ctx.rotate(this.angle); 
-	this.tile.render(viewport, -(this.tile.size * viewport.scale)/2, -(this.tile.size * viewport.scale)/2);
-	viewport.ctx.restore();
+	);
+	viewport.ctx.rotate(this.angle);
+	Tile.tiles[this.tile.id].render(viewport, -(this.tile.size * viewport.scale)/2, -(this.tile.size * viewport.scale)/2);
+	viewport.ctx.restore();*/
+	Tile.tiles[this.tile.id].render(viewport, -10, -10);
 };
 
 

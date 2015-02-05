@@ -43,20 +43,38 @@ Track.prototype.render = function(viewport) {
 		this.nextPos(curve, pos);
 	}
 	// Render actual svg path
-	//var path = new Path2D(this.pathString);
-	//viewport.ctx.stroke(path);
+	var path = new Path2D(this.pathString);
+	viewport.ctx.stroke(path);
 };
 
 Track.prototype.nextPos = function(curve, pos) {
 	var n = curve.node2;
-	if(n.x == 16 && n.y  == 32) // Going Down
+	if(n.x == 16 		&& n.y == 32) // Going Down
 		pos.y++;
-	else if(n.x == 16 && n.y	== 0) // Going Up
+	else if(n.x == 16 	&& n.y == 0) // Going Up
 		pos.y--;
-	else if(n.x == 0 && n.y  == 16) // Going Left
+	else if(n.x == 0 	&& n.y == 16) // Going Left
 		pos.x--;
-	else if(n.x == 32 && n.y	== 16) // Going Right
+	else if(n.x == 32 	&& n.y == 16) // Going Right
 		pos.x++;
+};
+
+
+Track.prototype.build = function() {
+	//var pos = this.coaster.position.copy();
+	var pos = V(0,0);
+	var c = this.pieces[0].getCurve();
+	var path = "M" + (c.node1.x + (pos.x * Tile.tileSize)) + " " + (c.node1.y + (pos.y * Tile.tileSize));
+	for(var p in this.pieces) {
+		c = this.pieces[p].getCurve();
+		path += " C" + (c.node1cp.x + (pos.x * Tile.tileSize)) + " " + (c.node1cp.y + (pos.y * Tile.tileSize));
+		path += ", " + (c.node2cp.x + (pos.x * Tile.tileSize)) + " " + (c.node2cp.y + (pos.y * Tile.tileSize));
+		path += ", " + (c.node2.x + (pos.x * Tile.tileSize)) +   " " + (c.node2.y + (pos.y * Tile.tileSize));
+		this.nextPos(c, pos);
+	}
+	this.pathString = path;
+	this.path.setAttribute('d',	path);
+	this.length = this.path.getTotalLength()
 };
 
 

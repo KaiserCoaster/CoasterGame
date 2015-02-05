@@ -44,9 +44,11 @@ Vector.prototype.copy = function() {
  * @return Vector - new Vector with rotated x and y coordinates.
  */ 
 Vector.prototype.rotate = function(rad) {
-	var x = (this.x * Math.cos(rad)) - (this.y * Math.sin(rad));
-	var y = (this.x * Math.sin(rad)) + (this.y * Math.cos(rad));
-	return V(x, y);
+	var sin = Math.sin(rad);
+	var cos = Math.cos(rad);
+	var x = (this.x * cos) - (this.y * sin);
+	var y = (this.x * sin) + (this.y * cos);
+	return V(Math.round(x), Math.round(y));
 };
 
 

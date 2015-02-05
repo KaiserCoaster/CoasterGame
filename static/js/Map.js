@@ -11,7 +11,6 @@ var Map = function() {
 	}*/
 	this.coasters[0] = new Coaster();
 	this.coasters[0].init();
-	this.coasters[0].dev();
 };
 
 Map.prototype.generateGround = function(genSize, returnMap) {
@@ -56,8 +55,8 @@ Map.prototype.generateMap = function(genSize, returnMap) {
 
 Map.prototype.update = function() {
 	// Update trains.
-	for(var t in this.tracks) {
-		this.tracks[t].update();
+	for(var c in this.tracks) {
+		this.coasters[c].update();
 	}
 }
 

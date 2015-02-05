@@ -75,6 +75,20 @@ Tile.prototype.tileX = function() {
 };
 
 
+Tile.prototype.rotatedRender = function(viewport, cX, cY, rad) {
+	var scaledTile = viewport.scale * this.size;
+	var ctr = V(viewport.width/2, viewport.height/2);
+	viewport.ctx.save(); 
+	var position = V(cX, cY);
+	viewport.ctx.translate(	cX + (scaledTile / 2),
+							cY + (scaledTile / 2)
+	); 
+	viewport.ctx.rotate(rad); 
+	this.render(viewport, -(scaledTile)/2, -(scaledTile)/2);
+	viewport.ctx.restore();
+};
+
+
 /** 
  * @desc Render this tile object.
  * @param Viewport viewport - the Viewport object containing the canvas info and context for rendering.
